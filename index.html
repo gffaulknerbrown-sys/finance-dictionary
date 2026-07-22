@@ -52,9 +52,43 @@
   }
 
   header {
+    position: relative;
     padding: 56px 24px 40px;
     text-align: center;
     border-bottom: 1px solid var(--border-light);
+  }
+
+  .settings-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .settings-btn:hover {
+    background: var(--border-light);
+    color: var(--navy);
+  }
+
+  .settings-btn:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+  }
+
+  .settings-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
   }
 
   header h1 {
@@ -72,15 +106,66 @@
     font-weight: 400;
   }
 
-  .api-key-section {
-    margin-top: 32px;
-    padding: 16px 18px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fafbfc;
+  /* Settings modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 46, 74, 0.35);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
   }
 
-  .api-key-section label {
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 12px 40px rgba(26, 46, 74, 0.18);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .modal-close {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .modal-close:hover {
+    background: var(--border-light);
+    color: var(--navy);
+  }
+
+  .modal label {
     display: block;
     font-size: 13px;
     font-weight: 500;
@@ -116,13 +201,21 @@
   }
 
   .api-key-help {
-    margin: 8px 0 0;
+    margin: 12px 0 0;
     font-size: 12px;
+    line-height: 1.5;
     color: var(--text-muted);
   }
 
+  .modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
   .api-key-status {
-    margin: 8px 0 0;
+    margin: 0;
     font-size: 12px;
     font-weight: 500;
   }
@@ -394,21 +487,17 @@
 <body>
   <div class="page">
     <header>
+      <button type="button" class="settings-btn" id="settings-btn" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
       <h1>Finance Dictionary</h1>
       <p>Plain English explanations for financial terms</p>
     </header>
 
     <main>
-      <div class="api-key-section">
-        <label for="api-key-input">Anthropic API key</label>
-        <div class="api-key-row">
-          <input type="password" id="api-key-input" placeholder="sk-ant-...">
-          <button type="button" id="toggle-key-visibility">Show</button>
-        </div>
-        <p class="api-key-help">Your key is used directly from your browser to call the Anthropic API. It is not sent anywhere else or stored on any server.</p>
-        <p class="api-key-status ok" id="api-key-status" style="display:none;">Key set for this session.</p>
-      </div>
-
       <div class="mode-switch">
         <button type="button" class="active" data-mode="lookup" id="tab-lookup">Look up a term</button>
         <button type="button" data-mode="decode" id="tab-decode">Decode a document</button>
@@ -447,20 +536,76 @@
     </footer>
   </div>
 
+  <div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="settings-title">Settings</h2>
+        <button type="button" class="modal-close" id="modal-close" aria-label="Close settings">&times;</button>
+      </div>
+      <label for="api-key-input">Anthropic API key</label>
+      <div class="api-key-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-...">
+        <button type="button" id="toggle-key-visibility">Show</button>
+      </div>
+      <p class="api-key-help">Your API key is used directly in your browser to call the Anthropic API. It is never stored on any server.</p>
+      <div class="modal-actions">
+        <button type="button" class="primary-btn" id="save-key-btn" style="margin-top: 0;">
+          <span class="btn-label">Save</span>
+        </button>
+        <p class="api-key-status ok" id="api-key-status" style="display:none;">Key saved for this session.</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SYSTEM_PROMPT = "You are a financial jargon expert. Explain financial terms in plain English. Never provide financial advice, product recommendations, or suggested actions. Explanations only.";
     const RESULT_DISCLAIMER = "This explanation is for educational purposes only and does not constitute financial advice.";
     const MODEL = "claude-sonnet-4-6";
 
+    // Held in memory for the session only — never persisted to storage.
     let apiKey = "";
 
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const modalCloseBtn = document.getElementById('modal-close');
+    const saveKeyBtn = document.getElementById('save-key-btn');
     const apiKeyInput = document.getElementById('api-key-input');
     const toggleKeyBtn = document.getElementById('toggle-key-visibility');
     const apiKeyStatus = document.getElementById('api-key-status');
 
-    apiKeyInput.addEventListener('input', () => {
-      apiKey = apiKeyInput.value.trim();
+    function openSettings() {
+      // Reflect the current saved key when reopening.
+      apiKeyInput.value = apiKey;
       apiKeyStatus.style.display = apiKey ? 'block' : 'none';
+      settingsModal.classList.add('open');
+      apiKeyInput.focus();
+    }
+
+    function closeSettings() {
+      settingsModal.classList.remove('open');
+      settingsBtn.focus();
+    }
+
+    settingsBtn.addEventListener('click', openSettings);
+    modalCloseBtn.addEventListener('click', closeSettings);
+
+    // Close when clicking the dimmed backdrop, or on Escape.
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) closeSettings();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && settingsModal.classList.contains('open')) {
+        closeSettings();
+      }
+    });
+
+    saveKeyBtn.addEventListener('click', () => {
+      apiKey = apiKeyInput.value.trim();
+      if (apiKey) {
+        closeSettings();
+      } else {
+        apiKeyStatus.style.display = 'none';
+      }
     });
 
     toggleKeyBtn.addEventListener('click', () => {
@@ -624,7 +769,7 @@
       const term = termInput.value.trim();
 
       if (!apiKey) {
-        showError('Enter your Anthropic API key above before making a request.');
+        showError('Please set your API key first — click the settings icon in the top right corner.');
         return;
       }
       if (!term) {
@@ -650,7 +795,7 @@
       const text = documentInput.value.trim();
 
       if (!apiKey) {
-        showError('Enter your Anthropic API key above before making a request.');
+        showError('Please set your API key first — click the settings icon in the top right corner.');
         return;
       }
       if (!text) {
