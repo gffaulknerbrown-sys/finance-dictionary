@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Dictionary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2e4a;
+    --navy-soft: #3a4d6b;
+    --bg: #ffffff;
+    --text: #1c1c1c;
+    --text-muted: #6b7280;
+    --border: #e3e5e9;
+    --border-light: #eef0f3;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  header {
+    padding: 56px 24px 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+  }
+
+  header p {
+    margin: 10px 0 0;
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  /* Mode switch */
+  .mode-switch {
+    display: flex;
+    margin: 40px 0 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mode-switch button {
+    flex: 1;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .mode-switch button:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .mode-switch button.active {
+    background: var(--navy);
+    color: #ffffff;
+  }
+
+  .mode-switch button:not(.active):hover {
+    background: var(--border-light);
+  }
+
+  .mode-switch button:focus-visible,
+  .primary-btn:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+  }
+
+  /* Panels */
+  .panel {
+    display: none;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  input[type="text"],
+  textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  input[type="text"] {
+    height: 46px;
+  }
+
+  textarea {
+    min-height: 180px;
+    resize: vertical;
+  }
+
+  .primary-btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 12px 28px;
+    background: var(--navy);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .primary-btn:hover {
+    background: var(--navy-soft);
+  }
+
+  /* Results */
+  .results-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .results-heading {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+  }
+
+  .results-box {
+    min-height: 120px;
+    padding: 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: #fafbfc;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .results-box.empty {
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .disclaimer {
+    margin-top: 16px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 64px;
+    padding: 24px 24px 32px;
+    text-align: center;
+    border-top: 1px solid var(--border-light);
+  }
+
+  footer p {
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 480px) {
+    header {
+      padding: 40px 20px 32px;
+    }
+
+    header h1 {
+      font-size: 24px;
+    }
+
+    main {
+      padding: 0 20px;
+    }
+
+    .mode-switch {
+      margin: 32px 0 28px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Finance Dictionary</h1>
+      <p>Plain English explanations for financial terms</p>
+    </header>
+
+    <main>
+      <div class="mode-switch">
+        <button type="button" class="active" data-mode="lookup" id="tab-lookup">Look up a term</button>
+        <button type="button" data-mode="decode" id="tab-decode">Decode a document</button>
+      </div>
+
+      <!-- Mode 1: Look up a term -->
+      <section class="panel active" id="panel-lookup">
+        <label for="term-input">Financial term</label>
+        <input type="text" id="term-input" placeholder="e.g. compound interest">
+        <br>
+        <button type="button" class="primary-btn" id="explain-btn">Explain</button>
+      </section>
+
+      <!-- Mode 2: Decode a document -->
+      <section class="panel" id="panel-decode">
+        <label for="document-input">Paste your text</label>
+        <textarea id="document-input" placeholder="Paste a paragraph, statement, or document excerpt here..."></textarea>
+        <br>
+        <button type="button" class="primary-btn" id="decode-btn">Decode</button>
+      </section>
+
+      <div class="results-section">
+        <p class="results-heading">Result</p>
+        <div class="results-box empty" id="results-box">
+          Your explanation will appear here.
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>This explanation is for educational purposes only and does not constitute financial advice. Always consult a qualified financial adviser before making financial decisions.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Mode switching logic
+    const tabs = document.querySelectorAll('.mode-switch button');
+    const panels = {
+      lookup: document.getElementById('panel-lookup'),
+      decode: document.getElementById('panel-decode')
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        Object.values(panels).forEach(p => p.classList.remove('active'));
+        panels[tab.dataset.mode].classList.add('active');
+      });
+    });
+
+    // Buttons are currently non-functional placeholders.
+    // API integration to be added separately.
+    document.getElementById('explain-btn').addEventListener('click', () => {
+      // TODO: wire up term lookup
+    });
+
+    document.getElementById('decode-btn').addEventListener('click', () => {
+      // TODO: wire up document decoding
+    });
+  </script>
+</body>
+</html>
