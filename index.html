@@ -16,6 +16,8 @@
     --text-muted: #6b7280;
     --border: #e3e5e9;
     --border-light: #eef0f3;
+    --error: #b3261e;
+    --error-bg: #fbeceb;
   }
 
   * {
@@ -49,7 +51,6 @@
     padding: 0 24px;
   }
 
-  /* Header */
   header {
     padding: 56px 24px 40px;
     text-align: center;
@@ -71,7 +72,65 @@
     font-weight: 400;
   }
 
-  /* Mode switch */
+  .api-key-section {
+    margin-top: 32px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fafbfc;
+  }
+
+  .api-key-section label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .api-key-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .api-key-row input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .api-key-row button {
+    flex-shrink: 0;
+    padding: 0 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .api-key-row button:hover {
+    background: var(--border-light);
+  }
+
+  .api-key-help {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .api-key-status {
+    margin: 8px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .api-key-status.ok {
+    color: #1a7a3d;
+  }
+
   .mode-switch {
     display: flex;
     margin: 40px 0 32px;
@@ -114,7 +173,6 @@
     outline-offset: 2px;
   }
 
-  /* Panels */
   .panel {
     display: none;
   }
@@ -132,6 +190,7 @@
   }
 
   input[type="text"],
+  input[type="password"],
   textarea {
     width: 100%;
     font-family: inherit;
@@ -143,7 +202,8 @@
     padding: 12px 14px;
   }
 
-  input[type="text"] {
+  input[type="text"],
+  input[type="password"] {
     height: 46px;
   }
 
@@ -153,7 +213,9 @@
   }
 
   .primary-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     margin-top: 16px;
     padding: 12px 28px;
     background: var(--navy);
@@ -171,7 +233,30 @@
     background: var(--navy-soft);
   }
 
-  /* Results */
+  .primary-btn:disabled {
+    background: var(--navy-soft);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    display: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .primary-btn.loading .spinner {
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
   .results-section {
     margin-top: 48px;
     padding-top: 32px;
@@ -195,6 +280,7 @@
     background: #fafbfc;
     font-size: 15px;
     color: var(--text);
+    white-space: pre-wrap;
   }
 
   .results-box.empty {
@@ -204,6 +290,15 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    white-space: normal;
+  }
+
+  .results-box.error {
+    color: var(--error);
+    background: var(--error-bg);
+    border-color: #f2c9c6;
+    font-size: 14px;
+    white-space: normal;
   }
 
   .disclaimer {
@@ -213,7 +308,6 @@
     color: var(--text-muted);
   }
 
-  /* Footer */
   footer {
     margin-top: 64px;
     padding: 24px 24px 32px;
@@ -245,6 +339,10 @@
     .mode-switch {
       margin: 32px 0 28px;
     }
+
+    .api-key-row {
+      flex-direction: column;
+    }
   }
 </style>
 </head>
@@ -256,25 +354,39 @@
     </header>
 
     <main>
+      <div class="api-key-section">
+        <label for="api-key-input">Anthropic API key</label>
+        <div class="api-key-row">
+          <input type="password" id="api-key-input" placeholder="sk-ant-...">
+          <button type="button" id="toggle-key-visibility">Show</button>
+        </div>
+        <p class="api-key-help">Your key is used directly from your browser to call the Anthropic API. It is not sent anywhere else or stored on any server.</p>
+        <p class="api-key-status ok" id="api-key-status" style="display:none;">Key set for this session.</p>
+      </div>
+
       <div class="mode-switch">
         <button type="button" class="active" data-mode="lookup" id="tab-lookup">Look up a term</button>
         <button type="button" data-mode="decode" id="tab-decode">Decode a document</button>
       </div>
 
-      <!-- Mode 1: Look up a term -->
       <section class="panel active" id="panel-lookup">
         <label for="term-input">Financial term</label>
         <input type="text" id="term-input" placeholder="e.g. compound interest">
         <br>
-        <button type="button" class="primary-btn" id="explain-btn">Explain</button>
+        <button type="button" class="primary-btn" id="explain-btn">
+          <span class="spinner"></span>
+          <span class="btn-label">Explain</span>
+        </button>
       </section>
 
-      <!-- Mode 2: Decode a document -->
       <section class="panel" id="panel-decode">
         <label for="document-input">Paste your text</label>
         <textarea id="document-input" placeholder="Paste a paragraph, statement, or document excerpt here..."></textarea>
         <br>
-        <button type="button" class="primary-btn" id="decode-btn">Decode</button>
+        <button type="button" class="primary-btn" id="decode-btn">
+          <span class="spinner"></span>
+          <span class="btn-label">Decode</span>
+        </button>
       </section>
 
       <div class="results-section">
@@ -291,7 +403,27 @@
   </div>
 
   <script>
-    // Mode switching logic
+    const SYSTEM_PROMPT = "You are a financial jargon expert. Explain financial terms in plain English. Never provide financial advice, product recommendations, or suggested actions. Explanations only.";
+    const RESULT_DISCLAIMER = "This explanation is for educational purposes only and does not constitute financial advice.";
+    const MODEL = "claude-sonnet-4-6";
+
+    let apiKey = "";
+
+    const apiKeyInput = document.getElementById('api-key-input');
+    const toggleKeyBtn = document.getElementById('toggle-key-visibility');
+    const apiKeyStatus = document.getElementById('api-key-status');
+
+    apiKeyInput.addEventListener('input', () => {
+      apiKey = apiKeyInput.value.trim();
+      apiKeyStatus.style.display = apiKey ? 'block' : 'none';
+    });
+
+    toggleKeyBtn.addEventListener('click', () => {
+      const isPassword = apiKeyInput.type === 'password';
+      apiKeyInput.type = isPassword ? 'text' : 'password';
+      toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+    });
+
     const tabs = document.querySelectorAll('.mode-switch button');
     const panels = {
       lookup: document.getElementById('panel-lookup'),
@@ -307,14 +439,135 @@
       });
     });
 
-    // Buttons are currently non-functional placeholders.
-    // API integration to be added separately.
-    document.getElementById('explain-btn').addEventListener('click', () => {
-      // TODO: wire up term lookup
+    const resultsBox = document.getElementById('results-box');
+    const explainBtn = document.getElementById('explain-btn');
+    const decodeBtn = document.getElementById('decode-btn');
+    const termInput = document.getElementById('term-input');
+    const documentInput = document.getElementById('document-input');
+
+    function setLoading(button, isLoading) {
+      button.disabled = isLoading;
+      button.classList.toggle('loading', isLoading);
+    }
+
+    function showEmpty(message) {
+      resultsBox.className = 'results-box empty';
+      resultsBox.textContent = message;
+    }
+
+    function showError(message) {
+      resultsBox.className = 'results-box error';
+      resultsBox.textContent = message;
+    }
+
+    function showResult(text) {
+      resultsBox.className = 'results-box';
+      resultsBox.textContent = '';
+
+      const body = document.createElement('div');
+      body.textContent = text.trim();
+      resultsBox.appendChild(body);
+
+      const disclaimer = document.createElement('p');
+      disclaimer.className = 'disclaimer';
+      disclaimer.textContent = RESULT_DISCLAIMER;
+      resultsBox.appendChild(disclaimer);
+    }
+
+    async function callClaude(userPrompt) {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          messages: [
+            { role: 'user', content: userPrompt }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const errJson = await response.json();
+          detail = errJson && errJson.error && errJson.error.message ? errJson.error.message : '';
+        } catch (e) {
+        }
+
+        if (response.status === 401) {
+          throw new Error('That API key was rejected. Check the key and try again.');
+        }
+        if (response.status === 429) {
+          throw new Error('Rate limit reached. Wait a moment and try again.');
+        }
+        throw new Error(detail || `Request failed (status ${response.status}).`);
+      }
+
+      const data = await response.json();
+      const textBlock = (data.content || []).find(block => block.type === 'text');
+      if (!textBlock || !textBlock.text) {
+        throw new Error('Received an empty response from the API.');
+      }
+      return textBlock.text;
+    }
+
+    explainBtn.addEventListener('click', async () => {
+      const term = termInput.value.trim();
+
+      if (!apiKey) {
+        showError('Enter your Anthropic API key above before making a request.');
+        return;
+      }
+      if (!term) {
+        showError('Enter a financial term to look up.');
+        return;
+      }
+
+      setLoading(explainBtn, true);
+      showEmpty('Looking that up...');
+
+      try {
+        const prompt = `Explain the following financial term in plain English for someone with no finance background: "${term}"`;
+        const text = await callClaude(prompt);
+        showResult(text);
+      } catch (err) {
+        showError(err.message || 'Something went wrong. Please try again.');
+      } finally {
+        setLoading(explainBtn, false);
+      }
     });
 
-    document.getElementById('decode-btn').addEventListener('click', () => {
-      // TODO: wire up document decoding
+    decodeBtn.addEventListener('click', async () => {
+      const text = documentInput.value.trim();
+
+      if (!apiKey) {
+        showError('Enter your Anthropic API key above before making a request.');
+        return;
+      }
+      if (!text) {
+        showError('Paste some text to decode.');
+        return;
+      }
+
+      setLoading(decodeBtn, true);
+      showEmpty('Scanning for jargon...');
+
+      try {
+        const prompt = `Identify every piece of financial jargon in the text below, and explain each term clearly in plain English. Present the result as a list: term, followed by its explanation. If there is no financial jargon in the text, say so plainly.\n\nText:\n"""${text}"""`;
+        const result = await callClaude(prompt);
+        showResult(result);
+      } catch (err) {
+        showError(err.message || 'Something went wrong. Please try again.');
+      } finally {
+        setLoading(decodeBtn, false);
+      }
     });
   </script>
 </body>
