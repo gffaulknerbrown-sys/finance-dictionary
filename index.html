@@ -224,6 +224,77 @@
     color: #1a7a3d;
   }
 
+  /* How to use (collapsible) */
+  .howto {
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fafbfc;
+  }
+
+  .howto-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .howto-toggle:hover {
+    color: var(--navy);
+  }
+
+  .howto-toggle:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: -2px;
+    border-radius: 8px;
+  }
+
+  .howto-toggle .chevron {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  .howto-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .howto-content {
+    display: none;
+    padding: 0 16px 16px;
+  }
+
+  .howto-content.open {
+    display: block;
+  }
+
+  .howto-content ol {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .howto-content li {
+    margin-bottom: 8px;
+  }
+
+  .howto-content li:last-child {
+    margin-bottom: 0;
+  }
+
   .mode-switch {
     display: flex;
     margin: 40px 0 32px;
@@ -498,6 +569,22 @@
     </header>
 
     <main>
+      <div class="howto">
+        <button type="button" class="howto-toggle" id="howto-toggle" aria-expanded="false" aria-controls="howto-content">
+          <span>How to use Finance Dictionary</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="howto-content" id="howto-content">
+          <ol>
+            <li>Click the settings icon in the top right corner and enter your Anthropic API key. Don't have one? Get one free at console.anthropic.com.</li>
+            <li>Choose a mode: 'Look up a term' for a single word or phrase, or 'Decode a document' to paste in a full block of text.</li>
+            <li>Click Explain or Decode and receive a plain-English explanation instantly.</li>
+          </ol>
+        </div>
+      </div>
+
       <div class="mode-switch">
         <button type="button" class="active" data-mode="lookup" id="tab-lookup">Look up a term</button>
         <button type="button" data-mode="decode" id="tab-decode">Decode a document</button>
@@ -612,6 +699,14 @@
       const isPassword = apiKeyInput.type === 'password';
       apiKeyInput.type = isPassword ? 'text' : 'password';
       toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+    });
+
+    const howtoToggle = document.getElementById('howto-toggle');
+    const howtoContent = document.getElementById('howto-content');
+
+    howtoToggle.addEventListener('click', () => {
+      const isOpen = howtoContent.classList.toggle('open');
+      howtoToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
     const tabs = document.querySelectorAll('.mode-switch button');
